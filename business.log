@@ -1,0 +1,31 @@
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] start 10 threads to server localhost:6666 ...
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 1 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 2 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 3 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 4 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 5 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 6 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 7 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 8 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 9 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - MainThread - INFO    ] new connection 10 to localhost:6666
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-1   - DEBUG   ] send register info: header: 53, 03e14e1c1fe3d0797a7feee25d6cc468 body:{"function": "control", "timestamp": 1448617762.4876}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-2   - DEBUG   ] send register info: header: 55, fb0d60babe9600a06b7e5deab11ba335 body:{"function": "control", "timestamp": 1448617762.487822}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-3   - DEBUG   ] send register info: header: 55, 730602c145412a2d3cd9b1d8da4491c6 body:{"function": "control", "timestamp": 1448617762.488011}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-4   - DEBUG   ] send register info: header: 55, ad5ef24f173ee1443999afe5ae33004c body:{"function": "control", "timestamp": 1448617762.488246}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-5   - DEBUG   ] send register info: header: 55, 847e86f65849baecad6b7f283491713c body:{"function": "control", "timestamp": 1448617762.488466}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-6   - DEBUG   ] send register info: header: 55, 277a6d20eb33e9ed698227c7dc2d2e9b body:{"function": "control", "timestamp": 1448617762.488702}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-7   - DEBUG   ] send register info: header: 55, fe17cac2565ef6184b6d18a1943369f7 body:{"function": "control", "timestamp": 1448617762.488906}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-8   - DEBUG   ] send register info: header: 55, 1940d618fe96dc054a136d38ccb8fdbe body:{"function": "control", "timestamp": 1448617762.489108}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-9   - DEBUG   ] send register info: header: 55, 9c6e9ae91b81e6f744a70ac059140192 body:{"function": "control", "timestamp": 1448617762.489352}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-10  - DEBUG   ] send register info: header: 55, 45f6d743eff1e7cc13605138a9e79d41 body:{"function": "control", "timestamp": 1448617762.489555}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-1   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-2   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-3   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-4   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-5   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-6   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-7   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-8   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-9   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 27 Nov 2015 17:49:22 - 28266  - Thread-10  - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}

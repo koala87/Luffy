@@ -1,0 +1,38 @@
+[Fri, 27 Nov 2015 17:49:19 - 28265  - MainThread - INFO    ] start server ...
+[Fri, 27 Nov 2015 17:49:19 - 28265  - MainThread - INFO    ] log file main.log ...
+[Fri, 27 Nov 2015 17:49:19 - 28265  - MainThread - INFO    ] listen localhost port 58849 for box ...
+[Fri, 27 Nov 2015 17:49:19 - 28265  - MainThread - INFO    ] listen localhost port 3050 for app ...
+[Fri, 27 Nov 2015 17:49:19 - 28265  - MainThread - INFO    ] listen localhost port 11235 for init ...
+[Fri, 27 Nov 2015 17:49:19 - 28265  - MainThread - INFO    ] listen localhost port 6666 for business ...
+[Fri, 27 Nov 2015 17:49:19 - 28265  - MainThread - INFO    ] listen localhost port 25377 for erp ...
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 53 03e14e1c1fe3d0797a7feee25d6cc468 from 127.0.0.1:51731
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 53: {"function": "control", "timestamp": 1448617762.4876} from 127.0.0.1:51731
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51731 0.0028 s
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 55 fb0d60babe9600a06b7e5deab11ba335 from 127.0.0.1:51732
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 55 730602c145412a2d3cd9b1d8da4491c6 from 127.0.0.1:51733
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 55 ad5ef24f173ee1443999afe5ae33004c from 127.0.0.1:51734
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 55 847e86f65849baecad6b7f283491713c from 127.0.0.1:51735
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 55 277a6d20eb33e9ed698227c7dc2d2e9b from 127.0.0.1:51736
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 55 fe17cac2565ef6184b6d18a1943369f7 from 127.0.0.1:51737
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 55 1940d618fe96dc054a136d38ccb8fdbe from 127.0.0.1:51738
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 55 9c6e9ae91b81e6f744a70ac059140192 from 127.0.0.1:51739
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register header: 55 45f6d743eff1e7cc13605138a9e79d41 from 127.0.0.1:51740
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 55: {"function": "control", "timestamp": 1448617762.487822} from 127.0.0.1:51732
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51732 0.0035 s
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 55: {"function": "control", "timestamp": 1448617762.488011} from 127.0.0.1:51733
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51733 0.0035 s
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 55: {"function": "control", "timestamp": 1448617762.488246} from 127.0.0.1:51734
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51734 0.0035 s
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 55: {"function": "control", "timestamp": 1448617762.488466} from 127.0.0.1:51735
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51735 0.0035 s
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 55: {"function": "control", "timestamp": 1448617762.488702} from 127.0.0.1:51736
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51736 0.0035 s
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 55: {"function": "control", "timestamp": 1448617762.488906} from 127.0.0.1:51737
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51737 0.0035 s
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 55: {"function": "control", "timestamp": 1448617762.489108} from 127.0.0.1:51738
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51738 0.0035 s
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 55: {"function": "control", "timestamp": 1448617762.489352} from 127.0.0.1:51739
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51739 0.0035 s
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - DEBUG   ] read register body: 55: {"function": "control", "timestamp": 1448617762.489555} from 127.0.0.1:51740
+[Fri, 27 Nov 2015 17:49:22 - 28265  - MainThread - INFO    ] register control successfully for 127.0.0.1:51740 0.0035 s
+[Fri, 27 Nov 2015 17:49:24 - 28265  - MainThread - INFO    ] stop server ...

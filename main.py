@@ -12,7 +12,8 @@ import logging
 from tornado.tcpserver import TCPServer
 from tornado.ioloop import IOLoop
 
-from connection import Connection, AppConnection, BoxConnection, ERPConnection, InitConnection
+from connection import Connection, AppConnection, BoxConnection
+from connection import ERPConnection, InitConnection, BusinessConnection
 
 # listen port
 BOX_PORT = 58849
@@ -70,7 +71,7 @@ def register_options():
         default=3050, help="specify port, default is 3050")
     parser.add_option("-n", "--num", dest="num",
         type="int",
-        default=8, help="specify process num")
+        default=1, help="specify process num")
     parser.add_option("-l", "--log", dest="log",
         default=get_default_log(),  help="specify process num")
     parser.add_option("-d", "--debug", dest="debug",
@@ -90,6 +91,7 @@ class KTVServer(TCPServer):
             APP_PORT : AppConnection,
             ERP_PORT : ERPConnection,
             INIT_PORT : InitConnection,
+            BUSINESS_PORT : BusinessConnection,
         }
         # instance new connection based on port type
         port_conn_map[port](stream, address)
