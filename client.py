@@ -34,10 +34,10 @@ def register_options():
         default="localhost", help="specify host, default is localhost")
     parser.add_option("-p", "--port", dest="port",
         type="int",
-        default=3050, help="specify port, default is 3050")
+        default=58849, help="specify port, default is 58849")
     parser.add_option("-n", "--num", dest="num",
         type="int",
-        default=10, help="specify threads num, default is 10")
+        default=1, help="specify threads num, default is 1")
     parser.add_option("-d", "--daemon", dest="daemon",
         action='store_true',
         default=False, help="set daemon process, default is false")
@@ -76,14 +76,16 @@ class Client(threading.Thread):
             logging.error('connect server failed: %s, errno=%d' % (err_msg, errno))
             return
 
-        while not self.thread_stop:
-            self.send()
-            time.sleep(0.1)
+        self.send()
+
+        #while not self.thread_stop:
+        #    self.send()
+        #    time.sleep(1)
 
 
     def send(self):
         body = 'hello world'
-        orig = [17, 100, 10018, 65536, len(body), 520]
+        orig = [17, 100, 10001, 65536, len(body), 520]
         elems = [socket.htonl(x) for x in orig]
         header = pack('6I', elems[0], elems[1], elems[2],
                             elems[3], elems[4], elems[5])

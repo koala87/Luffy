@@ -1,0 +1,7 @@
+[Tue, 01 Dec 2015 11:25:44 - 26108  - MainThread - INFO    ] start 1 threads to server localhost:6666 ...
+[Tue, 01 Dec 2015 11:25:44 - 26108  - MainThread - INFO    ] new connection 1 to localhost:6666
+[Tue, 01 Dec 2015 11:25:44 - 26108  - Thread-1   - DEBUG   ] send register info: header: 55, d88c150735e0e05eafb12f6195c57767 body:{"function": "control", "timestamp": 1448940344.320989}
+[Tue, 01 Dec 2015 11:25:44 - 26108  - Thread-1   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Tue, 01 Dec 2015 11:25:46 - 26108  - Thread-1   - DEBUG   ] read header:(2, 1, 7258b89e3a5b979a4e44b077e3ecc0f1, 1448940346.9282, 35, 127.0.0.1)
+[Tue, 01 Dec 2015 11:25:46 - 26108  - Thread-1   - DEBUG   ] read body: header(17, 100, 10001, 65536, 11, 520) body:hello world
+[Tue, 01 Dec 2015 11:25:46 - 26108  - Thread-1   - DEBUG   ] send packet back: header(2, 1, 7258b89e3a5b979a4e44b077e3ecc0f1, 1448940346.9282, 7, 127.0.0.1) body:hi~ box

@@ -5,6 +5,7 @@
 
 __author__ = "Yingqi Jin <jinyingqi@luoha.com>"
 
+__all__ = ['get_server', 'get_server_intro', 'read_config']
 
 import os
 import ConfigParser
@@ -21,10 +22,12 @@ class Singleton(object):
 class Configure(Singleton):
 
     def __init__(self):
-        self.server_addr_map = {}
+        self.server_intro_map = {}
         self.request_server_map = {}
         self.request_function_map = {}
+
         self.read_config()
+
 
     def read_config(self, fname='route.conf'):
         if not os.path.exists(fname):
@@ -38,9 +41,9 @@ class Configure(Singleton):
             opts = cf.options('server')
             for opt in opts:
                 str_val = cf.get('server', opt)
-                self.server_addr_map[opt] = str_val
+                self.server_intro_map[opt] = str_val
 
-        for sev in self.server_addr_map.iterkeys():
+        for sev in self.server_intro_map.iterkeys():
             if sev in secs:
                 opts = cf.options(sev)
                 for opt in opts:
@@ -49,33 +52,33 @@ class Configure(Singleton):
                     self.request_function_map[request] = str_val
                     self.request_server_map[request] = sev
 
+
     def get_all_server(self):
         return self.server_addr_map
+
 
     def get_server(self, request):
         return self.request_server_map.get(request, None)
 
-    def get_server_addr(self, server):
-        return self.server_addr_map.get(server, None)
 
-    def dump(self):
-        print self.server_addr_map
-        print self.request_server_map
+    def get_server_intro(self, server):
+        return self.server_intro_map.get(server, None)
 
 
 __configure = Configure()
 
+
 def get_all_server():
     return __configure.get_all_server()
+
 
 def get_server(request):
     return __configure.get_server(request)
 
-def get_server_addr(server):
-    return __configure.get_server_addr(server)
 
-def dump_config(server):
-    return __configure.dump();
+def get_server_intro(server):
+    return __configure.get_server_intro(server)
+
 
 def read_config(fname):
     __configure.read_config(fname)
@@ -84,5 +87,4 @@ def read_config(fname):
 if __name__ == '__main__':
 
     print get_server(10001)
-    print get_server_addr('control')
-    print get_all_server()
+    print get_server_intro('control')

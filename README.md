@@ -7,7 +7,7 @@ Author:
 Yingqi Jin <jinyingqi@luoha.com>
 
 Usage:
-./main.py <-- start tcp server
+./route.py <-- start tcp server
 ./client.py <-- start client to test server
-./business.py <-- start business to test server
+./control.py <-- start control module to test server
 

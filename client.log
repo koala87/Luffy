@@ -1,0 +1,4 @@
+[Tue, 01 Dec 2015 11:25:46 - 26109  - MainThread - INFO    ]	start 1 threads to server localhost:58849 ...
+[Tue, 01 Dec 2015 11:25:46 - 26109  - MainThread - INFO    ]	new connection 1 to localhost:58849
+[Tue, 01 Dec 2015 11:25:46 - 26109  - Thread-1   - DEBUG   ]	send header: (24 : 17, 100, 10001, 65536, 11, 520) to localhost:58849
+[Tue, 01 Dec 2015 11:25:46 - 26109  - Thread-1   - DEBUG   ]	send body: (11 : hello world) to localhost:58849

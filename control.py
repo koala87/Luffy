@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 #!coding=utf-8
 
+__author__ = 'Yingqi Jin <jinyingqi@luoha.com>'
+
+__all__ = ['Client.send_register', 'Client.read_register_feedback',
+           'Client.read_packet', 'Client.send_packet']
+
 import sys
 import time 
 import json
@@ -12,6 +17,12 @@ from struct import pack, unpack
 
 STOP = False
 THREADS = []
+
+# packet header length between route and business
+BUSINESS_HEADER_LENGTH = 56
+# packet header length between app/box/erp/init and business
+CLIENT_HEADER_LENGTH = 24
+
 
 def init_log(fname, debug):
     logging.basicConfig(
@@ -51,7 +62,7 @@ def register_options():
         default=6666, help="specify port, default is 3050")
     parser.add_option("-n", "--num", dest="num",
         type="int",
-        default=10, help="specify threads num, default is 10")
+        default=1, help="specify threads num, default is 10")
     parser.add_option("-l", "--log", dest="log",
         default=get_default_log(), help="specify log name")
     parser.add_option("-d", "--debug", dest="debug",
@@ -60,7 +71,6 @@ def register_options():
 
     (options, args) = parser.parse_args() 
     return options
-
 
 
 def stop_threads():
@@ -79,10 +89,31 @@ class Client(threading.Thread):
     def __init__(self, ip, port):
         Client.clients.add(self)
         threading.Thread.__init__(self)
+
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._address = (ip, port)
         self.thread_stop = False
+
+        # route server packet header
+        self._header_length = BUSINESS_HEADER_LENGTH
+        self._device_type = 0
+        self._device_id = 0
+        self._md5 = ''
+        self._timestamp = 0
+        self._length = 0
+        self._ip = 0
+
+        # client packet header
+        self._client_header_length = CLIENT_HEADER_LENGTH
+        self._author = 0
+        self._version = 0
+        self._request = 0
+        self._verify = 0
+        self._length = 0
+        self._device = 0
+
         logging.info('new connection %d to %s:%d' % (len(Client.clients), self._address[0], self._address[1]))
+
 
     def run(self):
         try:
@@ -125,7 +156,9 @@ class Client(threading.Thread):
         header : 4 bytes length of body
         body : status 
         """
-        msg = self._sock.recv(1024)
+        # TODO: read header size and then read body
+        msg = self._sock.recv(4096)
+
         header = msg[:4]
         length = socket.ntohl(unpack('I', header)[0])
         if len(msg) < length + 4:
@@ -136,32 +169,79 @@ class Client(threading.Thread):
             logging.error('status field not in body')
             return
         status = body['status'] 
+
         if status == 0:
             logging.info('register successfully : header:%d body:%s' % (length, msg[4:4+length]))
+            self.read_packet()
         else:
             logging.info('register failed')
 
 
-    def send(self):
-        body = 'hello world'
-        orig = [17, 100, 10018, 65536, len(body), 520]
-        elems = [socket.htonl(x) for x in orig]
-        header = pack('6I', elems[0], elems[1], elems[2],
-                            elems[3], elems[4], elems[5])
-        msg = header + body
-        try:
-            self._sock.send(msg)
-        except socket.error, arg:
-            (errno, err_msg) = arg
-            logging.error('send msg to server failed: %s, errno=%d' % (err_msg, errno))
-            stop_threads()
-            return
+    def read_packet(self):
+        from socket import ntohl
+        # TODO: read header size and then read body
+        buff = self._sock.recv(4096)
+
+        # extract route header
+        self._header = buff[:self._header_length]
+        parts = unpack("2I32sdII", self._header)
+        (self._device_type, self._device_id, self._md5,
+            self._timestamp, self._length, self._ip) = parts
+
+        # convert integers from network to host byte order
+        self._device_type = ntohl(self._device_type)
+        self._device_id = ntohl(self._device_id)
+        self._length = ntohl(self._length)
+        self._ip = socket.inet_ntoa(pack('I', ntohl(self._ip)))
+
+        logging.debug('read header:(%d, %d, %s, %.4f, %d, %s)'
+            % (self._device_type, self._device_id, self._md5,
+               self._timestamp, self._length, self._ip))
+
+        # read body
+        self._body = buff[self._header_length:]
+
+        # unpack body header
+        parts = unpack('6I', self._body[:self._client_header_length])
+        parts = [ntohl(x) for x in parts] 
+        (self._author, self._version, self._request,
+            self._verify, self._length, self._device) = parts
+ 
+        body1 = self._body[self._client_header_length:]
+        logging.debug('read body: header(%d, %d, %d, %d, %d, %d) body:%s'
+            % (self._author, self._version, self._request,
+               self._verify, self._length, self._device, body1))
+
+        # send result back
+        self.send_packet()
+
+
+    def send_packet(self):
+        from socket import htonl
+        type_map = {
+            1 : 'app',
+            2 : 'box',
+            3 : 'erp',
+            4 : 'init',
+        }
+        cli = 'no type'
+        if self._device_type in type_map:
+            cli = type_map[self._device_type]
         
-        header_str = ', '.join([str(x) for x in orig])
-        logging.debug('send header: (%d : %s) to %s:%d' % (len(header), header_str,
-            self._address[0], self._address[1]))
-        logging.debug('send body: (%d : %s) to %s:%d' % (len(body), body, 
-            self._address[0], self._address[1]))
+        #!!! put business logic result here
+
+        body = 'hi~ %s' % cli
+
+        ip = htonl(unpack('I', socket.inet_aton(self._ip))[0])
+        header = pack("2I32sdII", htonl(self._device_type),
+            htonl(self._device_id), self._md5, self._timestamp,
+            htonl(len(body)), ip)
+
+        msg = header + body
+        self._sock.send(msg)
+        logging.debug('send packet back: header(%d, %d, %s, %.4f, %d, %s) body:%s'
+            % (self._device_type, self._device_id, self._md5,
+               self._timestamp, len(body), self._ip, body))
 
 
     def stop(self):
@@ -181,6 +261,7 @@ if __name__ == '__main__':
         THREADS.append(client)
     
     for i in THREADS: 
+        i.setDaemon(True)
         i.start()
 
     signal.signal(signal.SIGTERM, sig_handler)

@@ -13,7 +13,8 @@ from tornado.tcpserver import TCPServer
 from tornado.ioloop import IOLoop
 
 from connection import Connection, AppConnection, BoxConnection
-from connection import ERPConnection, InitConnection, BusinessConnection
+from connection import ERPConnection, InitConnection
+from bconnection import BusinessConnection
 
 # listen port
 BOX_PORT = 58849
