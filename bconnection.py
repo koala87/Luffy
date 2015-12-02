@@ -28,7 +28,7 @@ class BusinessConnection(object):
 
     @classmethod
     def clean_connection(cls):
-        for cli in cls.clients:
+        for cli in cls.conns:
             cli._stream.close()
 
 
@@ -44,8 +44,8 @@ class BusinessConnection(object):
 
         self._function = '' # control/forward/music ...
 
-        # header between route and business
-        self._type = '' # 1 bytes, app/box/erp/init
+        # header between route and business : 56 bytes
+        self._type = '' # 4 bytes, app/box/erp/init
         self._id= '' # 4 bytes, unique id
         self._md5 = '' # 32 bytes, used to track each request
         self._timestamp = 0 # 8 bytes
@@ -123,7 +123,6 @@ class BusinessConnection(object):
 
         self._stream.write(header + msg)
         logging.debug('send msg:%s to %s' % (msg, self._addr_str))
-        self.read_header()
 
 
     def read_header(self):
