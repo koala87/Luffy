@@ -75,9 +75,8 @@ class Client(threading.Thread):
             (errno, err_msg) = arg
             logging.error('connect server failed: %s, errno=%d' % (err_msg, errno))
             return
-
+        
         self.send()
-
         #while not self.thread_stop:
         #    self.send()
         #    time.sleep(1)

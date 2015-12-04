@@ -1,4 +1,5 @@
-[Wed, 02 Dec 2015 17:11:05 - 11276  - MainThread - INFO    ]	start 1 threads to server localhost:58849 ...
-[Wed, 02 Dec 2015 17:11:05 - 11276  - MainThread - INFO    ]	new connection 1 to localhost:58849
-[Wed, 02 Dec 2015 17:11:05 - 11276  - Thread-1   - DEBUG   ]	send header: (24 : 17, 100, 10001, 65536, 11, 520) to localhost:58849
-[Wed, 02 Dec 2015 17:11:05 - 11276  - Thread-1   - DEBUG   ]	send body: (11 : hello world) to localhost:58849
+[Thu, 03 Dec 2015 14:13:43 - 36000  - MainThread - INFO    ]	start 1 threads to server localhost:8888 ...
+[Thu, 03 Dec 2015 14:13:43 - 36000  - MainThread - INFO    ]	new connection 1 to localhost:8888
+[Thu, 03 Dec 2015 14:13:43 - 36000  - Thread-1   - DEBUG   ]	send header: (24 : 17, 100, 10001, 65536, 11, 520) to localhost:8888
+[Thu, 03 Dec 2015 14:13:43 - 36000  - Thread-1   - DEBUG   ]	send body: (11 : hello world) to localhost:8888
+[Thu, 03 Dec 2015 16:10:57 - 36000  - MainThread - INFO    ]	stop ...
