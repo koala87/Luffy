@@ -1,7 +1,7 @@
-[Thu, 03 Dec 2015 11:15:41 - 24135  - MainThread - INFO    ] start 1 threads to server localhost:6666 ...
-[Thu, 03 Dec 2015 11:15:41 - 24135  - MainThread - INFO    ] new connection 1 to localhost:6666
-[Thu, 03 Dec 2015 11:15:41 - 24135  - Thread-1   - DEBUG   ] send register info: header: 55, 1d108ad43ca4224b5cf66e84905583ed body:{"function": "control", "timestamp": 1449112541.354842}
-[Thu, 03 Dec 2015 11:15:41 - 24135  - Thread-1   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
-[Thu, 03 Dec 2015 11:15:41 - 24135  - Thread-1   - DEBUG   ] read header:(2, 1, 7258b89e3a5b979a4e44b077e3ecc0f1, 1449112541.8110, 35, 127.0.0.1)
-[Thu, 03 Dec 2015 11:15:41 - 24135  - Thread-1   - DEBUG   ] read body: header(17, 100, 10001, 65536, 11, 520) body:hello world
-[Thu, 03 Dec 2015 11:15:41 - 24135  - Thread-1   - DEBUG   ] send packet back: header(2, 1, 7258b89e3a5b979a4e44b077e3ecc0f1, 1449112541.8110, 7, 127.0.0.1) body:hi~ box
+[Fri, 04 Dec 2015 13:39:44 - 94656  - MainThread - INFO    ] start 1 threads to server localhost:6666 ...
+[Fri, 04 Dec 2015 13:39:44 - 94656  - MainThread - INFO    ] new connection 1 to localhost:6666
+[Fri, 04 Dec 2015 13:39:44 - 94656  - Thread-1   - DEBUG   ] send register info: header: 55, 926061e18a34c5ac891072c3606950d0 body:{"function": "control", "timestamp": 1449207584.224135}
+[Fri, 04 Dec 2015 13:39:44 - 94656  - Thread-1   - INFO    ] register successfully : header:27 body:{"status": 0, "reason": ""}
+[Fri, 04 Dec 2015 13:39:46 - 94656  - Thread-1   - DEBUG   ] read header:(2, 1, 7258b89e3a5b979a4e44b077e3ecc0f1, 1449207586.3288, 35, 127.0.0.1)
+[Fri, 04 Dec 2015 13:39:46 - 94656  - Thread-1   - DEBUG   ] read body: header(17, 100, 10001, 65536, 11, 520) body:hello world
+[Fri, 04 Dec 2015 13:39:46 - 94656  - Thread-1   - DEBUG   ] send packet back: header(2, 1, 7258b89e3a5b979a4e44b077e3ecc0f1, 1449207586.3288, 7, 127.0.0.1) body:hi~ box

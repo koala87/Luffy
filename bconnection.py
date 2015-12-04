@@ -124,6 +124,8 @@ class BusinessConnection(object):
         self._stream.write(header + msg)
         logging.debug('send msg:%s to %s' % (msg, self._addr_str))
 
+        self.read_header()
+
 
     def read_header(self):
         self._stream.read_bytes(BusinessConnection.header_length, self.read_body)
