@@ -14,9 +14,9 @@ import signal
 import logging
 import threading
 from struct import pack, unpack
+import tornado.iostream
+import tornado.ioloop
 
-STOP = False
-THREADS = []
 
 # packet header length between route and business
 BUSINESS_HEADER_LENGTH = 56
@@ -73,22 +73,13 @@ def register_options():
     return options
 
 
-def stop_threads():
-    for th in THREADS:
-        th.stop()
-    global STOP
-    STOP = True
 
-
-def sig_handler(sig, frame):
-    stop_threads()
-
-
-class Client(threading.Thread):
+class BaseBusiness(object):
     clients = set()
+    function = 'control'
+
     def __init__(self, ip, port):
-        Client.clients.add(self)
-        threading.Thread.__init__(self)
+        BaseBusiness.clients.add(self)
 
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._address = (ip, port)
@@ -112,7 +103,9 @@ class Client(threading.Thread):
         self._length = 0
         self._device = 0
 
-        logging.info('new connection %d to %s:%d' % (len(Client.clients), self._address[0], self._address[1]))
+        logging.info('new connection %d to %s:%d' % (len(BaseBusiness.clients), self._address[0], self._address[1]))
+
+        self.run()
 
 
     def run(self):
@@ -122,6 +115,8 @@ class Client(threading.Thread):
             (errno, err_msg) = arg
             logging.error('connect server failed: %s, errno=%d' % (err_msg, errno))
             return
+        self._stream = tornado.iostream.IOStream(self._sock)
+        self._stream.set_close_callback(self.on_close)
         
         self.send_register()
 
@@ -135,7 +130,7 @@ class Client(threading.Thread):
         import hashlib
         
         body = {}
-        body['function'] = 'control'
+        body['function'] = BaseBusiness.function 
         body['timestamp'] = time.time()
         msg = json.dumps(body)
 
@@ -145,45 +140,37 @@ class Client(threading.Thread):
 
         msg = json.dumps(body)
         header = pack("I32s", socket.htonl(len(msg)), md5)
-        self._sock.send(header + msg)
+        self._stream.write(header + msg)
         logging.debug('send register info: header: %d, %s body:%s' % (len(msg), md5, msg))
 
-        self.read_register_feedback()
+        self._stream.read_bytes(4, self.read_register_feedback_header)
 
 
-    def read_register_feedback(self):
-        """read server feedback
-        header : 4 bytes length of body
-        body : status 
-        """
-        # TODO: read header size and then read body
-        msg = self._sock.recv(4096)
+    def read_register_feedback_header(self, header):
+        self._length = socket.ntohl(unpack('I', header)[0])
+        self._stream.read_bytes(self._length, self.read_register_feedback_body)
 
-        header = msg[:4]
-        length = socket.ntohl(unpack('I', header)[0])
-        if len(msg) < length + 4:
-            logging.error('register feedback length is less than %d' % length + 4)
-            return
-        body = json.loads(msg[4:4+length])
+
+    def read_register_feedback_body(self, body_str):
+        body = json.loads(body_str)
         if 'status' not in body:
             logging.error('status field not in body')
             return
         status = body['status'] 
 
         if status == 0:
-            logging.info('register successfully : header:%d body:%s' % (length, msg[4:4+length]))
-            self.read_packet()
+            logging.info('register successfully : header:%d body:%s' % (self._length, body))
         else:
             logging.info('register failed')
 
 
-    def read_packet(self):
-        from socket import ntohl
-        # TODO: read header size and then read body
-        buff = self._sock.recv(4096)
+        self._stream.read_bytes(BUSINESS_HEADER_LENGTH, self.read_packet_header)
 
+
+    def read_packet_header(self, header):
+        from socket import ntohl
         # extract route header
-        self._header = buff[:self._header_length]
+        self._header = header 
         parts = unpack("2I32sdII", self._header)
         (self._device_type, self._device_id, self._md5,
             self._timestamp, self._length, self._ip) = parts
@@ -198,8 +185,12 @@ class Client(threading.Thread):
             % (self._device_type, self._device_id, self._md5,
                self._timestamp, self._length, self._ip))
 
-        # read body
-        self._body = buff[self._header_length:]
+        self._stream.read_bytes(self._length, self.read_packet_body)
+
+
+    def read_packet_body(self, body):
+        from socket import ntohl
+        self._body = body 
 
         # unpack body header
         parts = unpack('6I', self._body[:self._client_header_length])
@@ -212,11 +203,21 @@ class Client(threading.Thread):
             % (self._author, self._version, self._request,
                self._verify, self._length, self._device, body1))
 
+
+        # all logic will be handled here
+        self.do_something()
+
         # send result back
-        self.send_packet()
+        self.send_packet_back()
 
 
-    def send_packet(self):
+    #!!! import logic handler
+    def do_something(self):
+        logging.debug('do something ...')
+
+        
+
+    def send_packet_back(self):
         from socket import htonl
         type_map = {
             1 : 'app',
@@ -238,14 +239,17 @@ class Client(threading.Thread):
             htonl(len(body)), ip)
 
         msg = header + body
-        self._sock.send(msg)
+        self._stream.write(msg)
         logging.debug('send packet back: header(%d, %d, %s, %.4f, %d, %s) body:%s'
             % (self._device_type, self._device_id, self._md5,
                self._timestamp, len(body), self._ip, body))
 
+        self._stream.read_bytes(BUSINESS_HEADER_LENGTH, self.read_packet_header)
 
-    def stop(self):
-        self.thread_stop = True
+
+    def on_close(self):
+        logging.debug('%s business disconnected' % BaseBusiness.function)
+
 
 
 if __name__ == '__main__':
@@ -257,19 +261,9 @@ if __name__ == '__main__':
     logging.info('start %d threads to server %s:%d ...' % (opts.num, opts.host, opts.port))
 
     for i in xrange(opts.num):
-        client = Client(opts.host, opts.port)
-        THREADS.append(client)
+        BaseBusiness(opts.host, opts.port)
     
-    for i in THREADS: 
-        i.setDaemon(True)
-        i.start()
-
-    signal.signal(signal.SIGTERM, sig_handler)
-    signal.signal(signal.SIGINT, sig_handler)
-
-    # master thread to catch signal
-    while not STOP:
-        time.sleep(0.01)
+    tornado.ioloop.IOLoop.current().start()
 
     logging.info('stop ...')
 

@@ -35,6 +35,7 @@ class Connection(object):
         self._address = address
         self._addr_str = get_addr_str(self._address) 
         self._type = 1 # app:1 box:2 erp:3 init:4
+        self._registed = False
 
         self._header = ''
         self._body = ''
@@ -46,18 +47,15 @@ class Connection(object):
         self._device = 0
 
         self._stream.set_close_callback(self.on_close)
-        self.read_header()
+
+        self._stream.read_bytes(Connection.header_length, self.read_header)
 
 
     def set_type(self, device_type):
         self._type = device_type
 
 
-    def read_header(self):
-        self._stream.read_bytes(Connection.header_length, self.read_body)
-
-
-    def read_body(self, header):
+    def read_header(self, header):
         self._header = header
         parts = unpack("6I", self._header)
         from socket import ntohl
@@ -70,10 +68,10 @@ class Connection(object):
             self._verify, self._length, self._device,
             self._addr_str))
 
-        self._stream.read_bytes(self._length, self.parse_main)
+        self._stream.read_bytes(self._length, self.read_body)
 
 
-    def parse_main(self, body):
+    def read_body(self, body):
         logging.debug('read body(%s) from %s' % (body, self._addr_str))
         self._body = body
 
@@ -89,7 +87,7 @@ class Connection(object):
             logging.debug('no %s business server is avaliable' % business)
         BusinessConnection.clients_lock.release()
 
-        self.read_header()
+        self._stream.read_bytes(Connection.header_length, self.read_header)
 
 
     def on_close(self):

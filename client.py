@@ -9,8 +9,8 @@ import logging
 import threading
 from struct import pack, unpack
 
-STOP = False
-THREADS = []
+import tornado.iostream
+import tornado.ioloop
 
 def init_log():
     logging.basicConfig(
@@ -38,35 +38,26 @@ def register_options():
     parser.add_option("-n", "--num", dest="num",
         type="int",
         default=1, help="specify threads num, default is 1")
-    parser.add_option("-d", "--daemon", dest="daemon",
-        action='store_true',
-        default=False, help="set daemon process, default is false")
 
     (options, args) = parser.parse_args() 
     return options
 
 
-def stop_threads():
-    for th in THREADS:
-        th.stop()
-        #logging.info('stop %s ...' % th.getName())
-    global STOP
-    STOP = True
+def sig_handler(sig, iframe):
+    tornado.ioloop.IOLoop.current().stop()
+    logging.info('stop ...')
 
 
-def sig_handler(sig, frame):
-    stop_threads()
-
-
-class Client(threading.Thread):
+class Client(object):
     clients = set()
     def __init__(self, ip, port):
         Client.clients.add(self)
-        threading.Thread.__init__(self)
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._address = (ip, port)
-        self.thread_stop = False
+        self._stream = ''
         logging.info('new connection %d to %s:%d' % (len(Client.clients), self._address[0], self._address[1]))
+        self.run()
+
 
     def run(self):
         try:
@@ -75,12 +66,35 @@ class Client(threading.Thread):
             (errno, err_msg) = arg
             logging.error('connect server failed: %s, errno=%d' % (err_msg, errno))
             return
-        
-        self.send()
-        #while not self.thread_stop:
-        #    self.send()
-        #    time.sleep(1)
 
+        self._stream = tornado.iostream.IOStream(self._sock)
+        self._stream.set_close_callback(self.on_close)
+        
+        self._stream.read_types(24, self.read_header)
+ 
+        while not self.thread_stop:
+            self.send()
+            time.sleep(0.1)
+
+
+    def read_header(self, header):
+        from socket import ntohl
+        # extract route header
+        parts = unpack("6I", header)
+        parts = [ntohl(x) for x in parts]
+        
+        author, version, request, verify, length, device_id = parts
+
+        logging.debug('read header:(%d, %d, %d, %d, %d, %d)'
+            % (author, version, request,
+               verify, length, device_id))
+
+        self._stream.read_bytes(length, self.read_body)
+
+
+    def read_body(self, body):
+        logging.debug('read body: %s' % body)
+ 
 
     def send(self):
         body = 'hello world'
@@ -90,11 +104,10 @@ class Client(threading.Thread):
                             elems[3], elems[4], elems[5])
         msg = header + body
         try:
-            self._sock.send(msg)
+            self._stream.write(msg)
         except socket.error, arg:
             (errno, err_msg) = arg
             logging.error('send msg to server failed: %s, errno=%d' % (err_msg, errno))
-            stop_threads()
             return
         
         header_str = ', '.join([str(x) for x in orig])
@@ -102,10 +115,10 @@ class Client(threading.Thread):
             self._address[0], self._address[1]))
         logging.debug('send body: (%d : %s) to %s:%d' % (len(body), body, 
             self._address[0], self._address[1]))
+            
 
-
-    def stop(self):
-        self.thread_stop = True
+    def on_close(self):
+        logging.debug('disconnected from %s:%d' % (len(header), header_str))
 
 
 if __name__ == '__main__':
@@ -117,19 +130,12 @@ if __name__ == '__main__':
     logging.info('start %d threads to server %s:%d ...' % (opts.num, opts.host, opts.port))
 
     for i in xrange(opts.num):
-        client = Client(opts.host, opts.port)
-        THREADS.append(client)
+        Client(opts.host, opts.port)
     
-    for i in THREADS: 
-        i.setDaemon(opts.daemon)
-        i.start()
-
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
 
-    # master thread to catch signal
-    while not STOP:
-        time.sleep(0.01)
+    tornado.ioloop.IOLoop.current().start()
 
     logging.info('stop ...')
 

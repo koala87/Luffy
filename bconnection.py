@@ -102,6 +102,37 @@ class BusinessConnection(object):
         header = pack("I", socket.htonl(len(reply_str)))
         self._stream.write(header + reply_str)
 
+        self._stream.read_bytes(BusinessConnection.header_length, self.read_header)
+
+
+    def read_header(self, header):
+        self._header = header
+        parts = unpack("2I32sdII", self._header)
+        from socket import ntohl
+
+        (self._type, self._id, self._md5,
+            self._timestamp, self._length, self._ip) = parts
+
+        self._type = ntohl(self._type)
+        self._id = ntohl(self._id)
+        self._length = ntohl(self._length)
+        self._ip = socket.inet_ntoa(pack('I', ntohl(self._ip)))
+
+        logging.debug('read header(%d, %d, %s, %f, %d, %s) from %s' % (
+            self._type, self._id, self._md5,
+            self._timestamp, self._length, self._ip,
+            self._addr_str))
+
+        self._stream.read_bytes(self._length, self.read_body)
+
+
+    def read_body(self, body):
+        logging.debug('read body(%d:%s) from %s' % (len(body),
+            body, self._addr_str))
+        self._body = body
+
+        self._stream.read_bytes(BusinessConnection.header_length, self.read_header)
+
 
     def send(self, msg, device_type=1, ip_str='127.0.0.1'):
         from socket import htonl
@@ -123,39 +154,6 @@ class BusinessConnection(object):
 
         self._stream.write(header + msg)
         logging.debug('send msg:%s to %s' % (msg, self._addr_str))
-
-        self.read_header()
-
-
-    def read_header(self):
-        self._stream.read_bytes(BusinessConnection.header_length, self.read_body)
-
-
-    def read_body(self, header):
-        self._header = header
-        parts = unpack("2I32sdII", self._header)
-        from socket import ntohl
-
-        (self._type, self._id, self._md5,
-            self._timestamp, self._length, self._ip) = parts
-
-        self._type = ntohl(self._type)
-        self._id = ntohl(self._id)
-        self._length = ntohl(self._length)
-        self._ip = socket.inet_ntoa(pack('I', ntohl(self._ip)))
-
-        logging.debug('read header(%d, %d, %s, %f, %d, %s) from %s' % (
-            self._type, self._id, self._md5,
-            self._timestamp, self._length, self._ip,
-            self._addr_str))
-
-        self._stream.read_bytes(self._length, self.parse_main)
-
-
-    def parse_main(self, body):
-        logging.debug('read body(%d:%s) from %s' % (len(body),
-            body, self._addr_str))
-        self._body = body
 
 
     def on_close(self):
