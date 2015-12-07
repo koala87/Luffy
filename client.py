@@ -6,18 +6,20 @@ import time
 import socket
 import signal
 import logging
-import threading
+from threading import Thread
 from struct import pack, unpack
 
 import tornado.iostream
 import tornado.ioloop
+
+THREADS = []
 
 def init_log():
     logging.basicConfig(
         level=logging.DEBUG,
         format='[%(asctime)s - %(process)-6d - %(threadName)-10s - %(levelname)-8s]\t%(message)s',
         datefmt='%a, %d %b %Y %H:%M:%S',
-        filename='client.log',
+        filename='log/client.log',
         filemode='w')
     
     sh = logging.StreamHandler()
@@ -27,11 +29,17 @@ def init_log():
     logging.getLogger('').addHandler(sh)
 
 
+def get_ip():
+    hostname = socket.gethostname()
+    ip = socket.gethostbyname(hostname)
+    return ip
+
+
 def register_options():
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("-i", "--host", dest="host",
-        default="localhost", help="specify host, default is localhost")
+        default=get_ip(), help="specify host, default is localhost")
     parser.add_option("-p", "--port", dest="port",
         type="int",
         default=58849, help="specify port, default is 58849")
@@ -45,36 +53,49 @@ def register_options():
 
 def sig_handler(sig, iframe):
     tornado.ioloop.IOLoop.current().stop()
+    for i in THREADS:
+        i.stop()
     logging.info('stop ...')
 
 
-class Client(object):
+class Client(Thread):
     clients = set()
     def __init__(self, ip, port):
+        Thread.__init__(self) 
         Client.clients.add(self)
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._address = (ip, port)
+        self._addr_str = ip + ':' + str(port)
+
         self._stream = ''
-        logging.info('new connection %d to %s:%d' % (len(Client.clients), self._address[0], self._address[1]))
-        self.run()
+        self._stop = False
 
 
     def run(self):
-        try:
-            self._sock.connect(self._address)
-        except socket.error, arg:
-            (errno, err_msg) = arg
-            logging.error('connect server failed: %s, errno=%d' % (err_msg, errno))
-            return
+        while not self._stop:
+            try:
+                self._sock.connect(self._address)
+                logging.info('new client connection %d to %s' %
+                    (len(Client.clients), self._addr_str))
+                break
+            except socket.error, arg:
+                (errno, err_msg) = arg
+                logging.error('connect to server %s failed: %s, errno=%d' %
+                    (self._addr_str, err_msg, errno))
+            time.sleep(1)
 
         self._stream = tornado.iostream.IOStream(self._sock)
         self._stream.set_close_callback(self.on_close)
         
-        self._stream.read_types(24, self.read_header)
- 
-        while not self.thread_stop:
+        self._stream.read_bytes(24, self.read_header)
+
+        while not self._stop:
             self.send()
             time.sleep(0.1)
+
+
+    def stop(self):
+        self._stop = True
 
 
     def read_header(self, header):
@@ -119,6 +140,7 @@ class Client(object):
 
     def on_close(self):
         logging.debug('disconnected from %s:%d' % (len(header), header_str))
+        self._stream.close()
 
 
 if __name__ == '__main__':
@@ -130,8 +152,13 @@ if __name__ == '__main__':
     logging.info('start %d threads to server %s:%d ...' % (opts.num, opts.host, opts.port))
 
     for i in xrange(opts.num):
-        Client(opts.host, opts.port)
-    
+        cli = Client(opts.host, opts.port)
+        THREADS.append(cli)
+
+    for i in THREADS:
+        i.setDaemon(True)
+        i.start()
+
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
 
